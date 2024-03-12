@@ -14,6 +14,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
+from pydantic import ValidationError
 
 
 def configure_webdriver(open_browser=False):
@@ -37,5 +38,15 @@ def configure_webdriver(open_browser=False):
     return driver
 
 
-def make_plural(word: str = '', num: int = 1):
+def make_plural(word: str = '', num: int = 1) -> str:
     return word + 's' if word and word.strip() and (num > 1 or num == 0) else word
+
+
+def validation_err_msg(Error: ValidationError) -> str:
+    msg = ''
+    if Error:
+        for error in Error.errors():
+            msg += error['msg'] + '\n'
+    return msg
+
+    

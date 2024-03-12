@@ -25,8 +25,8 @@ class WeWorkRemotelyScraper:
         self.errs: List[dict] = []
 
     @classmethod
-    def call(cls, url):
-        print("Running We Work Remotely...")
+    def call(cls, url, type):
+        print("Running We Work Remotely...", type)
         try:
             driver: WebDriver = configure_webdriver(open_browser=True)
             driver.maximize_window()
@@ -38,7 +38,11 @@ class WeWorkRemotelyScraper:
         print("Done We Work Remotely...")
 
     def request_page(self) -> None:
-        self.driver.get(self.url)
+        try:
+            self.driver.get(self.url)
+        except Exception as e:
+            breakpoint()
+            self.handle_exception(e)
 
     def handle_exception(self, exception: Union[Exception, str]) -> None:
         traceback.format_exc()
@@ -258,7 +262,8 @@ class WeWorkRemotelyScraper:
                         self.handle_exception(e)
                         continue
             self.driver.quit()
-            self.export_to_excel() if len(self.scraped_jobs) > 0 else None
+            self.upload_to_octagon()if len(self.scraped_jobs) > 0 else None
+            # self.export_to_excel() if len(self.scraped_jobs) > 0 else None
             # self.log_error_if_any() if len(self.errs) > 0 else None
         except Exception as e:
             self.handle_exception(e)
@@ -269,9 +274,8 @@ class WeWorkRemotelyScraper:
         columns_name: list[str] = ["job_title", "company_name", "address", "job_description", 'job_source_url', "job_posted_date", "salary_format",
                                    "estimated_salary", "salary_min", "salary_max", "job_source", "job_type", "job_description_tags"]
         df = pd.DataFrame(data=self.scraped_jobs, columns=columns_name)
-        self.upload_to_octagon()
-        # filename: str = f"data/wwr_{len(df)}_{str(datetime.now())}.csv"
-        # df.to_csv(filename, index=False)
+        filename: str = f"data/wwr_{len(df)}_{str(datetime.now())}.csv"
+        df.to_csv(filename, index=False)
 
     def log_error_if_any(self) -> List[dict]:
         df = pd.DataFrame(self.errs)
@@ -279,9 +283,9 @@ class WeWorkRemotelyScraper:
         errors = unique_df.to_dict(orient='records')
         unique_df.to_csv('./data/weworkremotely_errors.csv', index=False)
         return errors
-    
+
     def upload_to_octagon(self) -> None:
-        url = "http://50.10.3.189:8000/api/resp/flaskresponse/"
+        url = "http://5.5.1.220:8080/api/flask/flask-response/"
         payload = {
             "jobs": self.scraped_jobs,
         }
@@ -290,10 +294,9 @@ class WeWorkRemotelyScraper:
         }
         response = requests.post(url, json=payload, headers=headers)
         json_resp = response.json()
-        breakpoint()
-        
-        
 
 
-def weworkremotely(url: str, job_type: str = 'full time remote') -> None:
-    WeWorkRemotelyScraper.call(url)
+def weworkremotely(urls: list) -> None:
+    for url in urls:
+        print(f"URL: {url.job_url} || Type : {url.job_type}")
+        WeWorkRemotelyScraper.call(url=str(url.job_url), type=url.job_type)
