@@ -1,20 +1,9 @@
-import re
-import time
-import traceback
-from datetime import datetime
-from typing import List, Union
-import pandas as pd
-from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException, \
-    ElementNotVisibleException
-from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from pydantic import ValidationError
+import requests
+import os
 
 
 def configure_webdriver(open_browser=False):
@@ -49,4 +38,18 @@ def validation_err_msg(Error: ValidationError) -> str:
             msg += error['msg'] + '\n'
     return msg
 
-    
+
+def upload_jobs_to_octagon(payload) -> bool:
+    try:
+        base_url = os.getenv("OCTAGON_API_URL")
+        url = f"{base_url}/flask/flask-response/"
+        headers = {
+            "content-type": "application/json",
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        print(response.json())
+        return response.status_code == 200
+
+    except Exception as e:
+        print(str(e))
+        return False

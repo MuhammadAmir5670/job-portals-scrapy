@@ -3,7 +3,6 @@ import time
 import traceback
 from datetime import datetime
 from typing import List, Union
-import pandas as pd
 from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException, \
     ElementNotVisibleException
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -12,8 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from utils.helpers import configure_webdriver, make_plural
-import requests
+from utils.helpers import configure_webdriver, make_plural, upload_jobs_to_octagon
 
 
 class WeWorkRemotelyScraper:
@@ -263,40 +261,22 @@ class WeWorkRemotelyScraper:
                         continue
             self.driver.quit()
             self.upload_to_octagon()if len(self.scraped_jobs) > 0 else None
-            # self.export_to_excel() if len(self.scraped_jobs) > 0 else None
-            # self.log_error_if_any() if len(self.errs) > 0 else None
         except Exception as e:
             self.handle_exception(e)
-            # self.log_error_if_any() if len(self.errs) > 0 else None
             self.driver.quit()
 
-    def export_to_excel(self) -> None:
-        columns_name: list[str] = ["job_title", "company_name", "address", "job_description", 'job_source_url', "job_posted_date", "salary_format",
-                                   "estimated_salary", "salary_min", "salary_max", "job_source", "job_type", "job_description_tags"]
-        df = pd.DataFrame(data=self.scraped_jobs, columns=columns_name)
-        filename: str = f"data/wwr_{len(df)}_{str(datetime.now())}.csv"
-        df.to_csv(filename, index=False)
-
-    def log_error_if_any(self) -> List[dict]:
-        df = pd.DataFrame(self.errs)
-        unique_df = df.drop_duplicates()
-        errors = unique_df.to_dict(orient='records')
-        unique_df.to_csv('./data/weworkremotely_errors.csv', index=False)
-        return errors
-
     def upload_to_octagon(self) -> None:
-        url = "http://5.5.1.220:8080/api/flask/flask-response/"
-        payload = {
+        status = upload_jobs_to_octagon({
             "jobs": self.scraped_jobs,
-        }
-        headers = {
-            "content-type": "application/json",
-        }
-        response = requests.post(url, json=payload, headers=headers)
-        json_resp = response.json()
+            "job_source": "weworkremotely"
+        })
+        if not status:
+            self.driver.quit()
 
 
 def weworkremotely(urls: list) -> None:
     for url in urls:
         print(f"URL: {url.job_url} || Type : {url.job_type}")
         WeWorkRemotelyScraper.call(url=str(url.job_url), type=url.job_type)
+    
+    #TODO: Here we write logic to update the status of the scraper
