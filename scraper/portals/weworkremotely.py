@@ -26,7 +26,7 @@ class WeWorkRemotelyScraper:
     def call(cls, url, type):
         print("Running We Work Remotely...", type)
         try:
-            driver: WebDriver = configure_webdriver(open_browser=True)
+            driver: WebDriver = configure_webdriver()
             driver.maximize_window()
             wwr_scraper: cls.__class__ = cls(driver=driver, url=url)
             wwr_scraper.find_jobs()
