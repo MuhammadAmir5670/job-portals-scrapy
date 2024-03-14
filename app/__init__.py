@@ -1,6 +1,10 @@
 from flask import Flask
+from dotenv import load_dotenv
+
 
 from scraper.blueprint import scraping_blueprint
+
+load_dotenv()
 
 app = Flask(__name__)
 
