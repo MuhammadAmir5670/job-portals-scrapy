@@ -6,23 +6,22 @@ from . import PORTALS
 from .validator import ScraperData
 from utils.helpers import validation_err_msg
 
-scraping_blueprint = Blueprint('scraping', __name__)
+scraping_blueprint = Blueprint("scraping", __name__)
 
 
-@scraping_blueprint.route('/run-scraper', methods=['POST'])
+@scraping_blueprint.route("/run-scraper", methods=["POST"])
 def run_scraper():
     try:
         data = request.get_json()
         validated_data = ScraperData(**data)
         thread = threading.Thread(
-            target=PORTALS[validated_data.source.value],
-            args=(validated_data.links,)
+            target=PORTALS[validated_data.source.value], args=(validated_data.links,)
         )
         thread.start()
-        return jsonify({'message': 'Scraper started successfully'})
+        return jsonify({"message": "Scraper started successfully"})
 
     except ValidationError as e:
-        return jsonify({'error': validation_err_msg(e)}), 400
+        return jsonify({"error": validation_err_msg(e)}), 400
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
