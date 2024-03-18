@@ -95,15 +95,6 @@ def upload_jobs_to_octagon(payload) -> bool:
         return False
 
 def set_job_type(job_type, sub_type="remote"):
-    # if 'full time' in job_type.lower():
-    #     return JOB_TYPE[0] if 'remote' in job_type.lower() else JOB_TYPE[1] if 'site' in job_type.lower() else JOB_TYPE[2] if 'hybrid' in job_type.lower() else JOB_TYPE[1]
-    # elif 'hybrid' in job_type.lower():
-    #     return JOB_TYPE[2] if 'full time' in job_type.lower() else JOB_TYPE[3] if 'contract' in job_type.lower() else JOB_TYPE[2]
-    # elif 'contract' in job_type.lower():
-    #     return JOB_TYPE[4] if 'onsite' in job_type.lower() else JOB_TYPE[4] if 'site' in job_type.lower() else JOB_TYPE[5] if 'remote' in job_type.lower() else JOB_TYPE[4]
-    # else:
-    #   return job_type.capitalize()
-
     if 'full time' in job_type.lower() and sub_type == 'remote':
         return JOB_TYPE[0]
     elif 'full time' in job_type.lower() and sub_type == 'onsite':
