@@ -7,6 +7,7 @@ class SourceEnum(str, Enum):
     weworkremotely = "weworkremotely"
     dice = "dice"
     glassdoor = "glassdoor"
+    builtin = "builtin"
 
 
 class JobLink(BaseModel):
