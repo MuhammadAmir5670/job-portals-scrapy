@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request
 import threading
 from pydantic import ValidationError
 
-from . import PORTALS
-from .validator import ScraperData
+from scraper import PORTALS
+from scraper.validator import ScraperData
 from utils.helpers import validation_err_msg
 
 scraping_blueprint = Blueprint("scraping", __name__)
@@ -18,7 +18,7 @@ def run_scraper():
             target=PORTALS[validated_data.source.value], args=(validated_data.links,)
         )
         thread.start()
-        return jsonify({"message": "Scraper started successfully"})
+        return jsonify({"message": "Scraper started successfully"}), 200
 
     except ValidationError as e:
         return jsonify({"error": validation_err_msg(e)}), 400
