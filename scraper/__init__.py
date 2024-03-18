@@ -1,4 +1,4 @@
-from .portals import weworkremotely as wwr
-from .portals import dice
+from scraper.portals import weworkremotely as wwr
+from scraper.portals import dice
 
 PORTALS = {"weworkremotely": wwr.weworkremotely, "dice": dice.dice}

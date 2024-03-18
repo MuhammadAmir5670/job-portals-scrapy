@@ -21,7 +21,7 @@ class DiceScraper:
     def call(cls, url, type):
         print("Running Dice...")
         try:
-            driver: WebDriver = configure_webdriver(open_browser=True)
+            driver: WebDriver = configure_webdriver()
             driver.maximize_window()
 
             dice_scraper: cls.__class__ = cls(driver=driver, url=url)
