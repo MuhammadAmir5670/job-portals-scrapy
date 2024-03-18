@@ -1,0 +1,7 @@
+.flaskenv
+venv/*
+.env.example
+.git/*
+.gitignore
+Readme.md
+**/__pycache__/*

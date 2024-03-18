@@ -39,7 +39,6 @@ class WeWorkRemotelyScraper:
         try:
             self.driver.get(self.url)
         except Exception as e:
-            breakpoint()
             self.handle_exception(e)
 
     def handle_exception(self, exception: Union[Exception, str]) -> None:
