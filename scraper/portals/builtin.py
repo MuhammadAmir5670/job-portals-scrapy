@@ -158,7 +158,7 @@ def find_jobs(driver, job_type, total_job):
 def builtin(links):
     print("Builtin")
     for link in links:
-        driver = configure_webdriver(True, block_media=True, block_elements=['css', 'img'])
+        driver = configure_webdriver(block_media=True, block_elements=['css', 'img'])
         try:
             total_job = 0
             count = 0
