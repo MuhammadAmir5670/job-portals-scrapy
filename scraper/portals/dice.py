@@ -5,14 +5,15 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from utils.helpers import configure_webdriver, upload_jobs_to_octagon
+from utils.helpers import configure_webdriver, upload_jobs_to_octagon, determine_job_sub_type
 import urllib.parse
 
 
 class DiceScraper:
-    def __init__(self, driver, url) -> None:
+    def __init__(self, driver, url, type) -> None:
         self.driver: WebDriver = driver
         self.url: str = url
+        self.job_type: str = type
         self.scraped_jobs: List[dict] = []
         self.job: dict = {}
         self.errs: List[dict] = []
@@ -21,10 +22,11 @@ class DiceScraper:
     def call(cls, url, type):
         print("Running Dice...")
         try:
-            driver: WebDriver = configure_webdriver()
+            driver: WebDriver = configure_webdriver(open_browser=True)
             driver.maximize_window()
 
-            dice_scraper: cls.__class__ = cls(driver=driver, url=url)
+            dice_scraper: cls.__class__ = cls(
+                driver=driver, url=url, type=type)
             dice_scraper.find_jobs()
         except Exception as e:
             print(e)
@@ -39,7 +41,8 @@ class DiceScraper:
             page_number = int(query_params.get("page", [1])[0])
             self.driver.get(self.url)
             WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.TAG_NAME, "dhi-search-cards-widget"))
+                EC.presence_of_element_located(
+                    (By.TAG_NAME, "dhi-search-cards-widget"))
             )
             jobs = self.driver.find_elements(By.TAG_NAME, "dhi-search-card")
 
@@ -49,20 +52,24 @@ class DiceScraper:
                 self.driver.switch_to.window(original_window)
                 # count += 1
                 try:
-                    job_title = job.find_element(By.CLASS_NAME, "card-title-link")
+                    job_title = job.find_element(
+                        By.CLASS_NAME, "card-title-link")
                     self.job["job_title"] = job_title.text
                     c_name = job.find_element(
                         By.CLASS_NAME, "card-company"
                     ).find_element(By.TAG_NAME, "a")
                     self.job["company_name"] = c_name.text
-                    address = job.find_element(By.CLASS_NAME, "search-result-location")
+                    address = job.find_element(
+                        By.CLASS_NAME, "search-result-location")
                     self.job["job_source"] = "Dice"
-                    self.job["job_type"] = "N/A"
+                    self.job["job_type"] = determine_job_sub_type(
+                        self.job_type)
                     self.job["address"] = address.text
                     original_window = self.driver.current_window_handle
                     job_title.click()
                     time.sleep(2)
-                    self.driver.switch_to.window(self.driver.window_handles[-1])
+                    self.driver.switch_to.window(
+                        self.driver.window_handles[-1])
                     job_url = self.driver.current_url
 
                     try:
@@ -71,7 +78,8 @@ class DiceScraper:
                                 (By.CLASS_NAME, "job-description")
                             )
                         )
-                        self.driver.find_element(By.ID, "descriptionToggle").click()
+                        self.driver.find_element(
+                            By.ID, "descriptionToggle").click()
                     except:
                         self.driver.close()
                         continue
@@ -92,11 +100,10 @@ class DiceScraper:
                     self.job["salary_min"] = "N/A"
                     self.job["salary_max"] = "N/A"
 
-
                     self.scraped_jobs.append(self.job.copy())
                     self.driver.close()
                     self.driver.switch_to.window(original_window)
-                    
+
                     time.sleep(0.5)
                 except Exception as e:
                     print(e)
@@ -104,14 +111,16 @@ class DiceScraper:
 
             self.driver.switch_to.window(original_window)
             finished = "disabled"
-            pagination = self.driver.find_elements(By.CLASS_NAME, "pagination-next")
+            pagination = self.driver.find_elements(
+                By.CLASS_NAME, "pagination-next")
             try:
                 next_page = pagination[0].get_attribute("class")
                 if finished in next_page:
                     break
                 else:
                     query_params["page"] = [str(page_number + 1)]
-                    new_query_string = urllib.parse.urlencode(query_params, doseq=True)
+                    new_query_string = urllib.parse.urlencode(
+                        query_params, doseq=True)
                     self.url = urllib.parse.urlunparse(
                         parsed_url._replace(query=new_query_string)
                     )
@@ -119,41 +128,14 @@ class DiceScraper:
             except Exception as e:
                 print(e)
                 break
-        columns_name = [
-            "job_title",
-            "company_name",
-            "address",
-            "job_description",
-            "job_source_url",
-            "job_posted_date",
-            "salary_format",
-            "estimated_salary",
-            "salary_min",
-            "salary_max",
-            "job_source",
-            "job_type",
-            "job_description_tags",
-        ]
-        df = pd.DataFrame(data=self.scraped_jobs, columns=columns_name)
-        print(df)
         self.driver.quit()
         self.upload_to_octagon()if len(self.scraped_jobs) > 0 else None
 
     def upload_to_octagon(self) -> None:
-        status = upload_jobs_to_octagon({
+        upload_jobs_to_octagon({
             "jobs": self.scraped_jobs,
             "job_source": "dice"
         })
-        if not status:
-            self.driver.quit()
-
-    def determine_job_sub_type(type):
-        sub_type = "remote"
-        if "onsite" in type.strip().lower() or "on site" in type.strip().lower():
-            sub_type = "onsite"
-        if "hybrid" in type.strip().lower():
-            sub_type = "hybrid"
-        return sub_type
 
 
 def dice(urls: list) -> None:

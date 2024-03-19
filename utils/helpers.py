@@ -82,7 +82,7 @@ def validation_err_msg(Error: ValidationError) -> str:
 def upload_jobs_to_octagon(payload) -> bool:
     try:
         base_url = os.getenv("OCTAGON_API_URL")
-        url = f"{base_url}/api/flask/flask-response/"
+        url = f"{base_url}/flask/post-jobs/"
         headers = {
             "content-type": "application/json",
         }
@@ -147,3 +147,24 @@ def get_pia_web_url(undetected=False):
 # pia extension ids
 PIA_CRX_EXTENSION_ID = 'jplnlifepflhkbkgonidnobkakhmpnmh'
 PIA_UNPACKED_EXTENSION_ID = 'olfblhmobjbfckldmpdgehfecmjapkob'
+def determine_job_sub_type(type):
+        sub_type = "remote"
+        if "onsite" in type.strip().lower() or "on site" in type.strip().lower():
+            sub_type = "onsite"
+        if "hybrid" in type.strip().lower():
+            sub_type = "hybrid"
+        return sub_type
+
+def k_conversion(text):
+    return text.replace("k", ",000").replace( "K", ",000")
+
+def determine_job_sub_type(type):
+        sub_type = "remote"
+        if "onsite" in type.strip().lower() or "on site" in type.strip().lower():
+            sub_type = "onsite"
+        if "hybrid" in type.strip().lower():
+            sub_type = "hybrid"
+        return sub_type
+
+def k_conversion(text):
+    return text.replace("k", ",000").replace( "K", ",000")
