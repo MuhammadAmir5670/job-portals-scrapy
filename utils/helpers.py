@@ -154,17 +154,3 @@ def determine_job_sub_type(type):
         if "hybrid" in type.strip().lower():
             sub_type = "hybrid"
         return sub_type
-
-def k_conversion(text):
-    return text.replace("k", ",000").replace( "K", ",000")
-
-def determine_job_sub_type(type):
-        sub_type = "remote"
-        if "onsite" in type.strip().lower() or "on site" in type.strip().lower():
-            sub_type = "onsite"
-        if "hybrid" in type.strip().lower():
-            sub_type = "hybrid"
-        return sub_type
-
-def k_conversion(text):
-    return text.replace("k", ",000").replace( "K", ",000")
