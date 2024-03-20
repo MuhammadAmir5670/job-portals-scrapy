@@ -10,6 +10,7 @@ class SourceEnum(str, Enum):
     builtin = "builtin"
     simplyhired = "simplyhired"
     remoteok = "remoteok"
+    ziprecruiter = "ziprecruiter"
 
 
 class JobLink(BaseModel):

@@ -1,9 +1,10 @@
+import string
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from pydantic import ValidationError
 from selenium import webdriver
-from .const import *
+from utils.const import *
 import requests
 import random
 import time
@@ -143,10 +144,35 @@ def get_pia_web_url(undetected=False):
     pia_extension_id = PIA_UNPACKED_EXTENSION_ID if undetected else PIA_CRX_EXTENSION_ID
     pia_web_url = f"chrome-extension://{pia_extension_id}/html/foreground.html"
     return pia_web_url
+
 def remove_emojis(text):
     pattern =  r'[\w\s.,!?\'"“”‘’#$%^&*()_+=\-{}\[\]:;<>\|\\/~`]+'
     extracted_text = re.findall(pattern, text)
     return ' '.join(extracted_text)
+
+def generate_random_email():
+    # Define the characters to choose from
+    alpha_characters = string.ascii_letters  # This includes all alphabets (uppercase and lowercase)
+    numeric_characters = string.digits  # This includes 0-9
+
+    # Generate 5 random alphabet characters
+    alpha_part = ''.join(random.choice(alpha_characters) for _ in range(5))
+
+    # Generate 10 random numeric characters
+    numeric_part = ''.join(random.choice(numeric_characters) for _ in range(10))
+
+    # Combine the alpha and numeric parts with the email domain
+    email = alpha_part + numeric_part + "@example.com"
+
+    return email
+
+def is_cloudflare_captcha_exist(driver):
+    try:
+        text = driver.find_element(By.ID, 'challenge-running').text.lower()
+        return text == 'checking if the site connection is secure'
+    except Exception as e:
+        return False
+
 
 # pia extension ids
 PIA_CRX_EXTENSION_ID = 'jplnlifepflhkbkgonidnobkakhmpnmh'
