@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from utils.helpers import configure_webdriver, upload_jobs_to_octagon, determine_job_sub_type, k_conversion
+from utils.helpers import configure_webdriver, upload_jobs_to_octagon, set_job_type, k_conversion
 import time
 
 
@@ -21,7 +21,7 @@ class SimplyHiredScraper:
     def call(cls, url, type):
         print("Running Simply Hired...")
         try:
-            driver: WebDriver = configure_webdriver(open_browser=True)
+            driver: WebDriver = configure_webdriver()
             driver.maximize_window()
 
             simply_hired_scraper: cls.__class__ = cls(
@@ -64,7 +64,7 @@ class SimplyHiredScraper:
                 company_name = context[0].text.split("-")[0]
                 self.job["company_name"] = company_name
                 self.job["job_source"] = "SimplyHired"
-                self.job["job_type"] = determine_job_sub_type(
+                self.job["job_type"] = set_job_type(
                     self.job_type)
                 address = context[1].text
                 self.job["address"] = address

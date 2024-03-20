@@ -147,10 +147,3 @@ def get_pia_web_url(undetected=False):
 # pia extension ids
 PIA_CRX_EXTENSION_ID = 'jplnlifepflhkbkgonidnobkakhmpnmh'
 PIA_UNPACKED_EXTENSION_ID = 'olfblhmobjbfckldmpdgehfecmjapkob'
-def determine_job_sub_type(type):
-        sub_type = "remote"
-        if "onsite" in type.strip().lower() or "on site" in type.strip().lower():
-            sub_type = "onsite"
-        if "hybrid" in type.strip().lower():
-            sub_type = "hybrid"
-        return sub_type
