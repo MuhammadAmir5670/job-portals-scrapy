@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from utils.helpers import configure_webdriver, upload_jobs_to_octagon, determine_job_sub_type
+from utils.helpers import configure_webdriver, upload_jobs_to_octagon, set_job_type
 import urllib.parse
 
 
@@ -22,7 +22,7 @@ class DiceScraper:
     def call(cls, url, type):
         print("Running Dice...")
         try:
-            driver: WebDriver = configure_webdriver(open_browser=True)
+            driver: WebDriver = configure_webdriver()
             driver.maximize_window()
 
             dice_scraper: cls.__class__ = cls(
@@ -62,7 +62,7 @@ class DiceScraper:
                     address = job.find_element(
                         By.CLASS_NAME, "search-result-location")
                     self.job["job_source"] = "Dice"
-                    self.job["job_type"] = determine_job_sub_type(
+                    self.job["job_type"] = set_job_type(
                         self.job_type)
                     self.job["address"] = address.text
                     original_window = self.driver.current_window_handle
