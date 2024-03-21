@@ -82,7 +82,7 @@ def validation_err_msg(Error: ValidationError) -> str:
 def upload_jobs_to_octagon(payload) -> bool:
     try:
         base_url = os.getenv("OCTAGON_API_URL")
-        url = f"{base_url}/api/flask/flask-response/"
+        url = f"{base_url}/flask/post-jobs/"
         headers = {
             "content-type": "application/json",
         }
