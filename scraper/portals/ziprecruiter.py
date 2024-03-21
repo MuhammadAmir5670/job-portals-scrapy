@@ -242,9 +242,8 @@ def ziprecruiter(urls: list) -> None:
         try:
             print("Start in try portion.\n")
             driver = configure_webdriver(
-                # block_media=True,
-                # block_elements=['css', 'img', 'cookies'],
-                open_browser=True
+                block_media=True,
+                block_elements=['css', 'img', 'cookies']
             )
             driver.maximize_window()
             try:
@@ -255,5 +254,5 @@ def ziprecruiter(urls: list) -> None:
                 print("Error occurred during scraping. Details: ", e)
             finally:
                 driver.close()
-        except Exception as e:
+        except Exception as e:  
             print("Error occurred. Details: ", e)
