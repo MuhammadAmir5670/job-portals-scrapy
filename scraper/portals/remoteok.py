@@ -160,23 +160,6 @@ def find_jobs(driver, job_type):
             driver.switch_to.window(original_window)
             scraped_jobs.append(data.copy())
 
-    columns_name = [
-        "job_title",
-        "company_name",
-        "address",
-        "job_source_url",
-        "job_description",
-        "job_posted_date",
-        "salary_format",
-        "salary_min",
-        "salary_max",
-        "estimated_salary",
-        "job_source",
-        "job_type",
-        "job_description_tags",
-    ]
-
-    df = pd.DataFrame(data=scraped_jobs, columns=columns_name)
     status = upload_jobs_to_octagon({
             "jobs": scraped_jobs,
             "job_source": "remoteok"

@@ -82,8 +82,6 @@ def validation_err_msg(Error: ValidationError) -> str:
 
 def upload_jobs_to_octagon(payload) -> bool:
     try:
-        import pdb
-        pdb.set_trace()
         base_url = os.getenv("OCTAGON_API_URL")
         url = f"{base_url}/flask/post-jobs/"
         headers = {
