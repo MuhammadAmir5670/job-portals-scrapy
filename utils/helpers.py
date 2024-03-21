@@ -8,6 +8,7 @@ import requests
 import random
 import time
 import os
+import re
 
 
 def configure_webdriver(open_browser=False, block_media=False, block_elements=['css', 'img', 'js']):
@@ -81,6 +82,8 @@ def validation_err_msg(Error: ValidationError) -> str:
 
 def upload_jobs_to_octagon(payload) -> bool:
     try:
+        import pdb
+        pdb.set_trace()
         base_url = os.getenv("OCTAGON_API_URL")
         url = f"{base_url}/flask/post-jobs/"
         headers = {
@@ -142,7 +145,10 @@ def get_pia_web_url(undetected=False):
     pia_extension_id = PIA_UNPACKED_EXTENSION_ID if undetected else PIA_CRX_EXTENSION_ID
     pia_web_url = f"chrome-extension://{pia_extension_id}/html/foreground.html"
     return pia_web_url
-
+def remove_emojis(text):
+    pattern =  r'[\w\s.,!?\'"“”‘’#$%^&*()_+=\-{}\[\]:;<>\|\\/~`]+'
+    extracted_text = re.findall(pattern, text)
+    return ' '.join(extracted_text)
 
 # pia extension ids
 PIA_CRX_EXTENSION_ID = 'jplnlifepflhkbkgonidnobkakhmpnmh'
