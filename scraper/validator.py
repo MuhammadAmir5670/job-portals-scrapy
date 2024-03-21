@@ -9,6 +9,7 @@ class SourceEnum(str, Enum):
     glassdoor = "glassdoor"
     builtin = "builtin"
     simplyhired = "simplyhired"
+    remoteok = "remoteok"
 
 
 class JobLink(BaseModel):
